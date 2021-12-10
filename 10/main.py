@@ -20,7 +20,12 @@ def testLine(line) :
         else :
             return False, char
     # no bracket error detected
-    return True, ""
+    closingStr = ""
+    bracketPile.reverse()
+    for char in bracketPile :
+        closingStr += matches[char]
+
+    return True, closingStr
 
 numFails = { ")": 0,
              "]": 0,
@@ -34,13 +39,30 @@ scoreFails = { ")": 3,
                ">": 25137
 }
 
-score = 0
+scoreComplete = { ")": 1,
+                  "]": 2,
+                  "}": 3,
+                  ">": 4
+}
 
+score1 = 0
+listScore2 = []
 for line in L :
-    isCorrect, failChar = testLine(line)
-    if not isCorrect :
-        numFails[failChar] += 1
-        score += scoreFails[failChar]
+    isCorrect, returnChar = testLine(line)
+    if isCorrect :
+        newScore = 0
+        for char in returnChar :
+            newScore = newScore * 5 + scoreComplete[char]
+        listScore2.append(newScore)
+    else :
+        numFails[returnChar] += 1
+        score1 += scoreFails[returnChar]
+
+listScore2.sort()
 
 ### Question 1
-print(score)
+print(score1)
+
+### Question 2
+print(listScore2)
+print(listScore2[len(listScore2)//2])
