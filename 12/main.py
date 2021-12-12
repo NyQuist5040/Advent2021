@@ -49,3 +49,34 @@ allPaths = findEnd(allNodes["start"], [])
 
 ### Question 1
 print(len(allPaths))
+
+def findEnd2(startingPoint, visited) :
+    visited.append(startingPoint.getName())
+
+    if startingPoint.getName() == "end" :
+        return [visited]
+
+    canVisitSecond = True
+    visitedSmall = []
+    for name in visited :
+        if name[0].islower() :
+            if name not in visitedSmall :
+                visitedSmall.append(name)
+            else :
+                canVisitSecond = False
+
+    pathways = []
+
+    for node in startingPoint.getLinks() :
+        exploreNode = node.isBig() or ( node.getName() not in visited ) or \
+                      ( canVisitSecond and node.getName() != "start" )
+
+        if exploreNode :
+            pathways = pathways + findEnd2(node, visited.copy())
+
+    return pathways
+
+allPaths2 = findEnd2(allNodes["start"], [])
+
+### Question 2
+print(len(allPaths2))
