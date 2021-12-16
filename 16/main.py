@@ -35,6 +35,9 @@ class PacketInteger :
     def versionNumSum(self) :
         return self._version
 
+    def evaluate(self) :
+        return self._value
+
 class PacketOperator :
     def __init__(self, bits) :
         self._version = int(bits[0:3], 2)
@@ -57,6 +60,7 @@ class PacketOperator :
     def __str__(self) :
         fullStr = self.staggerStr(1)
         fullStr += f"\nSum of version numbers: {self.versionNumSum()}"
+        fullStr += f"\nEvaluation of the message: {self.evaluate()}"
         return fullStr
 
     def staggerStr(self, depth) :
@@ -98,6 +102,26 @@ class PacketOperator :
 
     def getBitLen(self) :
         return self._bitLen
+
+    def evaluate(self) :
+        subEval = [p.evaluate() for p in self._subPackets]
+        if self._typeID == 0 :
+            return sum(subEval)
+        elif self._typeID == 1 :
+            prod = 1
+            for v in subEval :
+                prod *= v
+            return prod
+        elif self._typeID == 2 :
+            return min(subEval)
+        elif self._typeID == 3 :
+            return max(subEval)
+        elif self._typeID == 5 :
+            return int(subEval[0] > subEval[1])
+        elif self._typeID == 6 :
+            return int(subEval[0] < subEval[1])
+        elif self._typeID == 7 :
+            return int(subEval[0] == subEval[1])
 
 hexaCode = L[0]
 bits = bin(int(hexaCode, 16))[2:].zfill(len(hexaCode)*4)
