@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 f = open("input.txt", "r")
 L = f.read().split("\n")[:-1]
@@ -77,7 +78,7 @@ def magnitude(num) :
         num, isReduced = reduceMagnitude(num)
         if not isReduced :
             break
-    return num
+    return int(num)
 
 
 def reduceMagnitude(num) :
@@ -103,3 +104,13 @@ print(result)
 
 ### Question 1
 print(magnitude(result))
+
+allMag = np.zeros((len(L), len(L)), np.int32)
+for i, num1 in enumerate(L) :
+    for j, num2 in enumerate(L) :
+        if i == j :
+            continue
+        allMag[i,j] = magnitude(add(num1, num2))
+
+### Question 2
+print(np.max(allMag))
