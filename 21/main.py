@@ -52,3 +52,49 @@ while True :
 
 ### Question 1
 print(loser.getScore() * die.getNumRolls())
+
+numBranches = {3: 1,
+               4: 3,
+               5: 6,
+               6: 7,
+               7: 6,
+               8: 3,
+               9: 1
+               }
+
+def diracGame(positions, scores) :
+    #if scores[0] >= 21 and scores[1] >= 21 :
+    #    return [1/27, 0]
+    elif scores[0] >= 21 :
+        return [1, 0]
+    elif scores[1] >= 21 :
+        return [0, 1]
+
+    numUniverses = [0, 0]
+    for sumRolls1 in range(3, 9+1) :
+        newPos[0] = (newPos[0] + sumRolls1 - 1)%10 + 1
+        newSco[0] += newPos[0]
+        newPos[1] = (newPos[1] + sumRolls2 - 1)%10 + 1
+        newSco[1] += newPos[1]
+
+        for sumRolls2 in range(3, 9+1) :
+            newPos = positions.copy()
+            newSco = scores.copy()
+
+            newPos[0] = (newPos[0] + sumRolls1 - 1)%10 + 1
+            newSco[0] += newPos[0]
+
+            newPos[1] = (newPos[1] + sumRolls2 - 1)%10 + 1
+            newSco[1] += newPos[1]
+
+            newGame = diracGame(newPos, newSco)
+
+            numUniverses[0] += numBranches[sumRolls1] * numBranches[sumRolls2] * newGame[0]
+            numUniverses[1] += numBranches[sumRolls1] * numBranches[sumRolls2] * newGame[1]
+
+    return numUniverses
+
+# Question 2
+numUni = diracGame([4,8], [0,0])
+print(numUni)
+print(max(numUni))
