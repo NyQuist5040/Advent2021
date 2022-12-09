@@ -1,6 +1,7 @@
+from operator import pos
 import numpy as np
 
-with open("15/input_test.txt") as f:
+with open("15/input.txt") as f:
     input_string = f.read()
 
 
@@ -78,10 +79,46 @@ def minimum_risk(risk_map):
 
     return known_bests
 
-# Question 1
-#print(minimum_risk_naive(risk_map))
-print(minimum_risk(risk_map))
+def min_danger_from_neighbours(i, j, risk_map, known_minimas):
+    # returns the minimum danger at i,j if a neighbour is already known, None instead
 
+    max_i, max_j = risk_map.shape
+
+    possible_dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    possible_danger_values = []
+    for dir in possible_dirs:
+        new_i, new_j = i + dir[0], j + dir[1]
+        # Check that the new position is within bounds
+        if 0 <= new_i < max_i and 0 <= new_j < max_j :
+            if not np.isnan(known_minimas[new_i, new_j]):
+                possible_danger_values.append(known_minimas[new_i, new_j] + risk_map[new_i, new_j])
+    if len(possible_danger_values) == 0:
+        return None
+    else:
+        return min(possible_danger_values)
+
+
+def iterative_true_minimum(risk_map):
+    max_i, max_j = risk_map.shape
+
+    minimas = np.zeros_like(risk_map) * np.nan
+    minimas[-1, -1] = 0
+
+    while True:
+        if not np.any(np.isnan(minimas)):
+            return minimas
+
+        # Edit all i,j that have a neighbour with a known minimum path
+        for i in range(max_i):
+            for j in range(max_j):
+                new_min_danger = min_danger_from_neighbours(i, j, risk_map, minimas)
+                if new_min_danger is not None:
+                    minimas[i, j] = new_min_danger
+
+
+
+# Question 1
+print(iterative_true_minimum(risk_map)[0, 0])
 
 
 def increment_tile(tile: np.ndarray):
@@ -102,6 +139,5 @@ for _ in range(4):
 large_map = np.concatenate(v_tiles, axis=0)
 
 
-# First compute the naive approach
-#naive_minimas = minimum_risk_naive(large_map)
-
+# Question 2
+print(iterative_true_minimum(large_map)[0, 0])
